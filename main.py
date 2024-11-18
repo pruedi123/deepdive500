@@ -175,7 +175,8 @@ def load_data(filepath='data.xlsx'):
     print("Columns after loading from Excel:", data.columns.tolist())
     
     return data
-
+data = get_data()
+st.write("Columns in the loaded data_df:", data["data_df"].columns.tolist())
 
 # Calculate dividends
 dividend_results = calculate_dividends(
