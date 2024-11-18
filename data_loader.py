@@ -26,9 +26,11 @@ def load_recession_data(filepath='recessions.xlsx'):
 
 def load_data(filepath='data.xlsx'):
     """
-    Loads general market data from the specified Excel worksheet and ensures column names are standardized.
+    Loads general market data from the specified Excel worksheet.
     """
     data = pd.read_excel(filepath, sheet_name='data')
+
+    # Standardize column names
     data.columns = (
         data.columns
         .str.strip()        # Remove extra spaces
@@ -36,9 +38,12 @@ def load_data(filepath='data.xlsx'):
         .str.replace(' ', '_')  # Replace spaces with underscores
     )
 
-    # Ensure 'date' exists and is properly formatted
+    # Ensure the 'date' column exists and is properly formatted
     if 'date' not in data.columns:
         raise KeyError("The 'data' sheet must contain a 'date' column.")
     data['date'] = pd.to_datetime(data['date'], errors='coerce')
+
+    # Drop rows where 'date' could not be parsed
+    data = data.dropna(subset=['date'])
 
     return data
