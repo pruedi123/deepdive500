@@ -75,17 +75,17 @@ import plotly.graph_objects as go
 def create_bar_chart(df, start_date, end_date, font_size=14):
     """
     Creates a bar chart for various increase factors over time with bold customized labels and adjustable font size.
-
-    Parameters:
-    df (pd.DataFrame): DataFrame containing financial data.
-    start_date (str): The start date for the range.
-    end_date (str): The end date for the range.
-    font_size (int): Font size for the bar labels.
-
-    Returns:
-    plotly.graph_objects.Figure: The generated bar chart.
     """
     import pandas as pd
+
+    # Debug: Print column names
+    print("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
+    import streamlit as st
+    st.write("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
+
+    # Check if 'Date' column exists
+    if 'Date' not in df.columns:
+        raise KeyError("The DataFrame passed to create_bar_chart does not contain a 'Date' column.")
 
     # Filter the DataFrame for the given date range
     df['Date'] = pd.to_datetime(df['Date'])
@@ -111,48 +111,34 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
         "CPI": cpi_factor,
     }
 
-    # Custom labels with arrows or placeholders, with bold formatting
+    # Create custom labels
     def format_label(value):
         if value > 1:
-            return f"↑ {value:.1f}x"  # Up arrow for values greater than 1
+            return f"↑ {value:.1f}x"
         elif value < 1:
-            return f"↓ {value:.1f}x"  # Down arrow for values less than 1
+            return f"↓ {value:.1f}x"
         else:
-            return f"↔ {value:.1f}x"  # Neutral arrow for exactly 1
+            return f"↔ {value:.1f}x"
 
-    # Apply custom labels
     custom_labels = [format_label(value) for value in factors.values()]
 
-    # Create a bar chart
+    # Create the bar chart
     fig = go.Figure(
         data=[
             go.Bar(
                 x=list(factors.keys()),
                 y=list(factors.values()),
-                text=custom_labels,  # Use custom labels
-                textposition='outside',  # Position labels outside the bars
-                texttemplate=f'<b>%{{text}}</b>',  # Bold labels with Plotly formatting
-                marker=dict(color=["blue", "green", "orange", "red"])  # Optional: color customization
+                text=custom_labels,
+                textposition='outside',
+                marker=dict(color=["blue", "green", "orange", "red"]),
             )
         ]
     )
 
-    # Calculate y-axis range to fit bars and labels
-    max_factor = max(factors.values())
-    y_axis_range = [0, max_factor * 1.2]  # Add 20% headroom above the highest bar
-
-    # Update layout with automargin and range adjustments
     fig.update_layout(
-        title="Nothing Short of Miraculous ",
+        title="Nothing Short of Miraculous",
         xaxis_title="Metric",
         yaxis_title="Increase Factor",
-        xaxis=dict(showgrid=False, automargin=True),  # Remove x-axis grid lines, enable automargin
-        yaxis=dict(showgrid=False, range=y_axis_range, automargin=True),  # Remove y-axis grid lines, set range
-        barmode="group",
-        margin=dict(t=100, l=50, r=50, b=50),  # Ensure sufficient spacing
-        legend_title="Metrics",
-        font=dict(size=24)  # Set font size
     )
 
     return fig
-    
