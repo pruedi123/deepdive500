@@ -165,6 +165,18 @@ st.header("A Deeper Dive Into Data")
 show_nominal = st.checkbox("Show Nominal Dividend Charts")
 show_real = st.checkbox("Show Real Dividend Charts")
 
+def load_data(filepath='data.xlsx'):
+    """
+    Loads general market data from the specified Excel worksheet.
+    """
+    data = pd.read_excel(filepath, sheet_name='data')
+    
+    # Debug: Print column names right after loading
+    print("Columns after loading from Excel:", data.columns.tolist())
+    
+    return data
+
+
 # Calculate dividends
 dividend_results = calculate_dividends(
     data["data_df"], start_date=begin_date, end_date=end_date, initial_investment=initial_investment
