@@ -13,10 +13,14 @@ def load_data(filepath='data.xlsx'):
     """
     data = pd.read_excel(filepath, sheet_name='data')
     
+    # Check for the 'Date' column and standardize to 'date'
+    if 'Date' in data.columns:
+        data.rename(columns={'Date': 'date'}, inplace=True)
+
     # Ensure the date column exists
     if 'date' not in data.columns:
         raise KeyError("The 'data' sheet must contain a 'date' column.")
-
+    
     # Format the 'date' column to 'YYYY-MM'
     data['date'] = pd.to_datetime(data['date'], errors='coerce').dt.strftime('%Y-%m')
 
