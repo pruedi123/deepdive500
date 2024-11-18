@@ -1,5 +1,8 @@
 import pandas as pd
 
+
+print("Columns in the loaded data:", data.columns.tolist())
+
 def load_bear_market_periods(filepath='bear_market_periods.xlsx'):
     """
     Loads bear market periods data from the specified Excel worksheet.
