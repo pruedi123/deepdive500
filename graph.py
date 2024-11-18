@@ -78,7 +78,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
     """
     import pandas as pd
 
-    # Debug: Print column names
+    # Debug: Print column names to verify DataFrame structure
     import streamlit as st
     st.write("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
 
