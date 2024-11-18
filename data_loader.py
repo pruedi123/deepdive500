@@ -24,25 +24,27 @@ def load_recession_data(filepath='recessions.xlsx'):
     return pd.read_excel(filepath, sheet_name='Sheet1')
 
 
-import pandas as pd
-import streamlit as st
-
 def load_data(filepath='data.xlsx'):
     """
     Loads general market data from the specified Excel worksheet and ensures the date column is properly formatted.
     """
     data = pd.read_excel(filepath, sheet_name='data')
-    
-    # Standardize column names to lowercase
-    data.columns = data.columns.str.strip().str.lower()
 
-    # Ensure the 'date' column exists
+    # Standardize column names
+    data.columns = (
+        data.columns
+        .str.strip()        # Remove leading/trailing spaces
+        .str.lower()        # Convert to lowercase
+        .str.replace(' ', '_')  # Replace spaces with underscores
+    )
+
+    # Ensure 'date' column exists
     if 'date' not in data.columns:
         raise KeyError("The 'data' sheet must contain a 'date' column.")
-    
+
     # Format the 'date' column to 'YYYY-MM'
     data['date'] = pd.to_datetime(data['date'], errors='coerce').dt.strftime('%Y-%m')
-    
+
     # Drop rows where 'date' could not be parsed
     data = data.dropna(subset=['date'])
 
