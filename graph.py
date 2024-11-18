@@ -68,38 +68,34 @@ def create_dividends_ending_value_chart(df, title="Dividends and Ending Value Ov
 
 
 
-# Now we create the four metrics Bar Chart
-
-import plotly.graph_objects as go
-
 def create_bar_chart(df, start_date, end_date, font_size=14):
     """
     Creates a bar chart for various increase factors over time.
     """
-    import pandas as pd
-
-    # Debug: Print column names to verify DataFrame structure
     import streamlit as st
+
+    # Debugging: Verify DataFrame structure
     st.write("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
 
-    # Check if 'date' column exists
-    if 'date' not in df.columns:
-        raise KeyError("The DataFrame passed to create_bar_chart does not contain a 'date' column.")
+    # Ensure column names match expected format
+    required_columns = ['composite', 'nominal_dividends', 'nominal_earnings', 'cpi']
+    if not all(col in df.columns for col in required_columns):
+        raise KeyError(f"DataFrame must contain columns: {required_columns}")
 
     # Filter the DataFrame for the given date range
-    df['date'] = pd.to_datetime(df['date'])
-    filtered_df = df[(df['date'] >= start_date) & (df['date'] <= end_date)]
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
 
-    # Validate required columns
-    required_columns = ['composite', 'nominal dividends', 'nominal earnings', 'cpi']
-    for col in required_columns:
-        if col not in filtered_df.columns:
-            raise KeyError(f"Missing column in DataFrame: {col}")
+    # Debugging: Ensure filtered data exists
+    st.write("Filtered DataFrame Preview:", filtered_df)
+
+    if filtered_df.empty:
+        raise ValueError(f"No data available between {start_date} and {end_date}")
 
     # Calculate increase factors
     composite_factor = filtered_df['composite'].iloc[-1] / filtered_df['composite'].iloc[0]
-    earnings_factor = filtered_df['nominal earnings'].iloc[-1] / filtered_df['nominal earnings'].iloc[0]
-    dividends_factor = filtered_df['nominal dividends'].iloc[-1] / filtered_df['nominal dividends'].iloc[0]
+    earnings_factor = filtered_df['nominal_earnings'].iloc[-1] / filtered_df['nominal_earnings'].iloc[0]
+    dividends_factor = filtered_df['nominal_dividends'].iloc[-1] / filtered_df['nominal_dividends'].iloc[0]
     cpi_factor = filtered_df['cpi'].iloc[-1] / filtered_df['cpi'].iloc[0]
 
     # Bar chart data
@@ -110,7 +106,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
         "CPI": cpi_factor,
     }
 
-    # Create custom labels
+    # Custom labels for the bars
     def format_label(value):
         if value > 1:
             return f"↑ {value:.1f}x"
@@ -138,6 +134,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
         title="Nothing Short of Miraculous",
         xaxis_title="Metric",
         yaxis_title="Increase Factor",
+        font=dict(size=font_size),
     )
 
     return fig
