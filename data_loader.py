@@ -26,11 +26,11 @@ def load_recession_data(filepath='recessions.xlsx'):
 
 def load_data(filepath='data.xlsx'):
     """
-    Loads general market data from the specified Excel worksheet and ensures the date column is properly formatted.
+    Loads general market data from the specified Excel worksheet and ensures column names are standardized.
     """
     data = pd.read_excel(filepath, sheet_name='data')
 
-    # Standardize column names
+    # Standardize column names: lowercase, strip spaces, replace spaces with underscores
     data.columns = (
         data.columns
         .str.strip()        # Remove leading/trailing spaces
