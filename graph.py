@@ -90,7 +90,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
     required_columns = ['Composite', 'Nominal Dividends', 'Nominal Earnings', 'CPI']
     for col in required_columns:
         if col not in filtered_df.columns:
-            raise KeyError(f"DataFrame must contain columns: {required_columns}")
+            raise KeyError(f"Missing column in DataFrame: {col}")
 
     # Calculate increase factors
     composite_factor = filtered_df['Composite'].iloc[-1] / filtered_df['Composite'].iloc[0]
