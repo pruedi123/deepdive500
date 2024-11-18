@@ -107,6 +107,12 @@ def get_data():
 
 data = get_data()
 
+# Debug: Verify the structure of the loaded data
+st.write("Columns in the 'data_df' DataFrame:", data["data_df"].columns.tolist())
+st.write("First few rows of 'data_df':")
+st.write(data["data_df"].head())
+
+
 # Cache loaded bond data to avoid redundant reloads
 @st.cache_data
 def get_bond_data():
