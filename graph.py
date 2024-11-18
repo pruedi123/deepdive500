@@ -1,10 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
+import streamlit as st
 
-# November 15
-
-
-# Existing function for creating dividend charts
 def create_dividends_ending_value_chart(df, title="Dividends and Ending Value Over Time"):
     fig = go.Figure()
 
@@ -66,16 +63,11 @@ def create_dividends_ending_value_chart(df, title="Dividends and Ending Value Ov
     return fig
 
 
-
-
 def create_bar_chart(df, start_date, end_date, font_size=14):
     """
     Creates a bar chart for various increase factors over time.
     """
-    import pandas as pd
-
-    # Debug: Print column names to verify DataFrame structure
-    import streamlit as st
+    # Debug: Print column names to verify structure
     st.write("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
 
     # Check if 'Date' column exists
