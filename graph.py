@@ -106,7 +106,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
         "CPI": cpi_factor,
     }
 
-    # Custom labels for the bars
+    # Create custom labels
     def format_label(value):
         if value > 1:
             return f"↑ {value:.1f}x"
@@ -134,7 +134,6 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
         title="Nothing Short of Miraculous",
         xaxis_title="Metric",
         yaxis_title="Increase Factor",
-        font=dict(size=font_size),
     )
 
     return fig
