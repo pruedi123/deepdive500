@@ -12,9 +12,19 @@ def load_bear_market_periods(filepath='bear_market_periods.xlsx'):
 
 def load_data(filepath='data.xlsx'):
     """
-    Loads general market data from the specified Excel worksheet.
+    Loads general market data from the specified Excel worksheet and ensures the column names match expected format.
     """
-    return pd.read_excel(filepath, sheet_name='data')
+    data = pd.read_excel(filepath, sheet_name='data')
+
+    # Standardize column names if needed (optional)
+    expected_columns = [
+        "Date", "Composite", "Nominal Dividends", "Nominal Earnings", "CPI",
+        "Total Return", "Real Earnings", "Real Composite", "Real Dividends", "Real Total Return"
+    ]
+    if not all(col in data.columns for col in expected_columns):
+        raise KeyError(f"Expected columns: {expected_columns}, but got: {data.columns.tolist()}")
+
+    return data
 
 
 def load_recession_data(filepath='recessions.xlsx'):
@@ -24,26 +34,4 @@ def load_recession_data(filepath='recessions.xlsx'):
     return pd.read_excel(filepath, sheet_name='Sheet1')
 
 
-def load_data(filepath='data.xlsx'):
-    """
-    Loads general market data from the specified Excel worksheet.
-    """
-    data = pd.read_excel(filepath, sheet_name='data')
 
-    # Standardize column names
-    data.columns = (
-        data.columns
-        .str.strip()        # Remove extra spaces
-        .str.lower()        # Convert to lowercase
-        .str.replace(' ', '_')  # Replace spaces with underscores
-    )
-
-    # Ensure the 'date' column exists and is properly formatted
-    if 'date' not in data.columns:
-        raise KeyError("The 'data' sheet must contain a 'date' column.")
-    data['date'] = pd.to_datetime(data['date'], errors='coerce')
-
-    # Drop rows where 'date' could not be parsed
-    data = data.dropna(subset=['date'])
-
-    return data
