@@ -248,3 +248,6 @@ try:
 
 except Exception as e:
     st.error(f"Error displaying the comparison tables: {e}")
+
+st.write("Columns in the data_df DataFrame:", data["data_df"].columns.tolist())
+st.write("Data preview:", data["data_df"].head())
