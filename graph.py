@@ -72,31 +72,31 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
     """
     Creates a bar chart for various increase factors over time.
     """
-    import streamlit as st
+    import pandas as pd
 
-    # Debugging: Verify DataFrame structure
+    # Debug: Print column names to verify DataFrame structure
+    import streamlit as st
     st.write("Columns in DataFrame passed to create_bar_chart:", df.columns.tolist())
 
-    # Ensure column names match expected format
-    required_columns = ['composite', 'nominal_dividends', 'nominal_earnings', 'cpi']
-    if not all(col in df.columns for col in required_columns):
-        raise KeyError(f"DataFrame must contain columns: {required_columns}")
+    # Check if 'Date' column exists
+    if 'Date' not in df.columns:
+        raise KeyError("The DataFrame passed to create_bar_chart does not contain a 'Date' column.")
 
     # Filter the DataFrame for the given date range
-    df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
+    df['Date'] = pd.to_datetime(df['Date'])
+    filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
 
-    # Debugging: Ensure filtered data exists
-    st.write("Filtered DataFrame Preview:", filtered_df)
-
-    if filtered_df.empty:
-        raise ValueError(f"No data available between {start_date} and {end_date}")
+    # Validate required columns
+    required_columns = ['Composite', 'Nominal Dividends', 'Nominal Earnings', 'CPI']
+    for col in required_columns:
+        if col not in filtered_df.columns:
+            raise KeyError(f"DataFrame must contain columns: {required_columns}")
 
     # Calculate increase factors
-    composite_factor = filtered_df['composite'].iloc[-1] / filtered_df['composite'].iloc[0]
-    earnings_factor = filtered_df['nominal_earnings'].iloc[-1] / filtered_df['nominal_earnings'].iloc[0]
-    dividends_factor = filtered_df['nominal_dividends'].iloc[-1] / filtered_df['nominal_dividends'].iloc[0]
-    cpi_factor = filtered_df['cpi'].iloc[-1] / filtered_df['cpi'].iloc[0]
+    composite_factor = filtered_df['Composite'].iloc[-1] / filtered_df['Composite'].iloc[0]
+    earnings_factor = filtered_df['Nominal Earnings'].iloc[-1] / filtered_df['Nominal Earnings'].iloc[0]
+    dividends_factor = filtered_df['Nominal Dividends'].iloc[-1] / filtered_df['Nominal Dividends'].iloc[0]
+    cpi_factor = filtered_df['CPI'].iloc[-1] / filtered_df['CPI'].iloc[0]
 
     # Bar chart data
     factors = {
