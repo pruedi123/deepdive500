@@ -46,7 +46,7 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
         return pd.DataFrame(), pd.DataFrame()
 
     # Ensure the 'Percentage Decline' column is numeric
-    filtered_bear_markets['Percentage Decline'] = pd.to_numeric(
+    filtered_bear_markets.loc[:, 'Percentage Decline'] = pd.to_numeric(
         filtered_bear_markets['Percentage Decline'], errors='coerce'
     ).fillna(0)
 
