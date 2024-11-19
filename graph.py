@@ -143,7 +143,7 @@ def create_bar_chart(df, start_date, end_date, font_size=14):
 
     # Update layout with automargin and range adjustments
     fig.update_layout(
-        title="Nothing Short of Miraculous ",
+        title="Nothing Short of A Miracle ",
         xaxis_title="Metric",
         yaxis_title="Increase Factor",
         xaxis=dict(showgrid=False, automargin=True),  # Remove x-axis grid lines, enable automargin
