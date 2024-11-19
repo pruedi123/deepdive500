@@ -145,7 +145,7 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
             'Average Decline (%)', 
             'Average Time Between Bear Markets (Start to Start) (Years, Months)',
             'Average Time Between End of Bear Market to the Start of Another (Years, Months)',
-            f'Number of Bear Markets Worse Than 50% Decline'
+            f'Number of Bear Market Declines > Than 50%'
         ],
         'Value': [
             len(filtered_bear_markets), 
