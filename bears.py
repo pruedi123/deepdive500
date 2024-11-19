@@ -62,7 +62,7 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
         filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'].fillna(0)
 
     # Convert 'Percentage Decline' from percentage to decimal for calculations (e.g., -56.8% to -0.568)
-    filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'] / 100
+    filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'] / 1
 
     # Sort the bear markets by 'Start Date' to ensure chronological order
     filtered_bear_markets = filtered_bear_markets.sort_values('Start Date').reset_index(drop=True)
