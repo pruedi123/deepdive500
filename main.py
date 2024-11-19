@@ -59,7 +59,7 @@ else:
         "Last 70 Years": 70,
         "Last 80 Years": 80,
         "Last 90 Years": 90,
-        "WW2": "1945-09",
+        "Enf of WW2": "1945-09",
     }
 
     # Set default selected period to "Last 30 Years"
