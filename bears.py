@@ -35,20 +35,24 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
         st.error("End date must be after the start date.")
         return pd.DataFrame(), pd.DataFrame()
 
-    # Filter bear markets within the date range
+    # Filter bear markets within the date range and create a copy to avoid SettingWithCopyWarning
     filtered_bear_markets = bear_market_data[
         (bear_market_data['Start Date'] >= pd.to_datetime(start_date)) & 
         (bear_market_data['End Date'] <= pd.to_datetime(end_date))
-    ]
+    ].copy()
 
     if filtered_bear_markets.empty:
         st.warning("No bear markets found within the selected date range.")
         return pd.DataFrame(), pd.DataFrame()
 
     # Ensure the 'Percentage Decline' column is numeric
+    # Strip the '%' sign and convert to numeric type
     filtered_bear_markets.loc[:, 'Percentage Decline'] = pd.to_numeric(
-        filtered_bear_markets['Percentage Decline'], errors='coerce'
+        filtered_bear_markets['Percentage Decline'].str.rstrip('%'), errors='coerce'
     ).fillna(0)
+
+    # Convert 'Percentage Decline' from percentage to decimal for calculations (e.g., -56.8% to -0.568)
+    filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'] / 100
 
     # Sort the bear markets by 'Start Date' to ensure chronological order
     filtered_bear_markets = filtered_bear_markets.sort_values('Start Date').reset_index(drop=True)
@@ -107,7 +111,7 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
     # Correct Formatting Before Creating Display DataFrame
     # -----------------------------
 
-    # Correctly format the 'Percentage Decline' column by multiplying by 100
+    # Format the 'Percentage Decline' column back to percentage strings for display
     filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'].apply(
         lambda x: f"{x * 100:.1f}%"
     )
@@ -131,7 +135,7 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
             'Average Decline (%)', 
             'Average Time Between Bear Markets (Start to Start) (Years, Months)',
             'Average Time Between End of Bear Market to the Start of Another (Years, Months)',
-            f'Bear Markets Worse Than {decline_threshold * 100}% Decline'
+            f'Bear Markets Worse Than {decline_threshold * 100:.1f}% Decline'
         ],
         'Value': [
             len(filtered_bear_markets), 
@@ -147,8 +151,10 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
     # Prepare Display DataFrame
     # -----------------------------
 
-    # Create a display DataFrame by dropping 'Start Date' and 'End Date'
-    filtered_bear_markets_display = filtered_bear_markets.drop(columns=['Start Date', 'End Date', 'Gap Days Start to Start', 'Gap Days End to Start', 'Previous End Date'])
+    # Create a display DataFrame by dropping unnecessary columns
+    filtered_bear_markets_display = filtered_bear_markets.drop(
+        columns=['Start Date', 'End Date', 'Gap Days Start to Start', 'Gap Days End to Start', 'Previous End Date']
+    )
 
     return summary_table, filtered_bear_markets_display  # Return both summary and filtered data
 
@@ -205,6 +211,12 @@ if __name__ == "__main__":
     # Load bear market data
     bear_market_data = load_bear_market_periods()
     
+    # Ensure 'Percentage Decline' column is of type string
+    if 'Percentage Decline' in bear_market_data.columns:
+        bear_market_data['Percentage Decline'] = bear_market_data['Percentage Decline'].astype(str)
+    else:
+        st.error("Data does not contain 'Percentage Decline' column.")
+    
     # Use BEGIN_DATE and END_DATE from config for filtering
     start_date = config.BEGIN_DATE
     end_date = config.END_DATE
@@ -236,8 +248,11 @@ if __name__ == "__main__":
     st.dataframe(bear_filtered_data)
 
     # Plotting
-    st.write("Bear Market Decline Distribution")
-    plot_decline_distribution(bear_filtered_data)
+    if not bear_filtered_data.empty:
+        st.write("Bear Market Decline Distribution")
+        plot_decline_distribution(bear_filtered_data)
 
-    st.write("Bear Market Timeline")
-    plot_bear_market_timeline(bear_filtered_data, bear_market_data, start_date, end_date)
+        st.write("Bear Market Timeline")
+        plot_bear_market_timeline(bear_filtered_data, bear_market_data, start_date, end_date)
+    else:
+        st.warning("No bear market data available for plotting.")
