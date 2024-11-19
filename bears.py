@@ -45,11 +45,21 @@ def calculate_bear_market_metrics(bear_market_data, start_date, end_date, declin
         st.warning("No bear markets found within the selected date range.")
         return pd.DataFrame(), pd.DataFrame()
 
+    # -----------------------------
     # Ensure the 'Percentage Decline' column is numeric
-    # Strip the '%' sign and convert to numeric type
-    filtered_bear_markets.loc[:, 'Percentage Decline'] = pd.to_numeric(
-        filtered_bear_markets['Percentage Decline'].str.rstrip('%'), errors='coerce'
-    ).fillna(0)
+    # -----------------------------
+
+    # Check if 'Percentage Decline' is of string type and contains '%'
+    if filtered_bear_markets['Percentage Decline'].dtype == 'object':
+        # Remove '%' sign if present
+        filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'].str.rstrip('%')
+        # Convert to numeric
+        filtered_bear_markets['Percentage Decline'] = pd.to_numeric(
+            filtered_bear_markets['Percentage Decline'], errors='coerce'
+        ).fillna(0)
+    else:
+        # If already numeric, ensure no NaN values
+        filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'].fillna(0)
 
     # Convert 'Percentage Decline' from percentage to decimal for calculations (e.g., -56.8% to -0.568)
     filtered_bear_markets['Percentage Decline'] = filtered_bear_markets['Percentage Decline'] / 100
@@ -210,12 +220,6 @@ def plot_bear_market_timeline(filtered_bear_markets, bear_market_data, start_dat
 if __name__ == "__main__":
     # Load bear market data
     bear_market_data = load_bear_market_periods()
-    
-    # Ensure 'Percentage Decline' column is of type string
-    if 'Percentage Decline' in bear_market_data.columns:
-        bear_market_data['Percentage Decline'] = bear_market_data['Percentage Decline'].astype(str)
-    else:
-        st.error("Data does not contain 'Percentage Decline' column.")
     
     # Use BEGIN_DATE and END_DATE from config for filtering
     start_date = config.BEGIN_DATE
