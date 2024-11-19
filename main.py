@@ -67,10 +67,10 @@ else:
         selected_period_label = st.sidebar.selectbox(
             "Select Predefined Period",
             list(predefined_periods_dict.keys()),
-            index=list(predefined_periods_dict.keys()).index("Last 30 Years")  # Set default to "Last 30 Years"
+            index=list(predefined_periods_dict.keys()).index("Since End of WW2")  # Set default to "Last 30 Years"
         )
     except ValueError:
-        selected_period_label = "Last 30 Years"  # Fallback if "Last 30 Years" not found
+        selected_period_label = "Since End of WW2"  # Fallback if "Last 30 Years" not found
 
     try:
         end_date = st.sidebar.selectbox("Select End Date", date_options, index=date_options.index(DEFAULT_END_DATE))
