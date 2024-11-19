@@ -79,7 +79,7 @@ else:
 
     end_date_dt = pd.to_datetime(end_date)
 
-    if selected_period_label == "WW2":
+    if selected_period_label == "Since End of WW2":
         begin_date = "1945-09"  # Set the specific begin date for WW2
     else:
         # Calculate the begin date for other predefined periods
