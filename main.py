@@ -196,7 +196,7 @@ if st.checkbox("Show Additional Financial Metrics"):
             start_date=begin_date, 
             end_date=end_date, 
             initial_investment=initial_investment, 
-            decimals=0
+            decimals=2
         )
         display_table("Additional Financial Metrics During This Period", metrics_df)
     except Exception as e:
