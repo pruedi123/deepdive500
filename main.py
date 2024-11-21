@@ -12,11 +12,11 @@ from metrics import calculate_metrics, calculate_comparison_table
 from investment_comparison import create_comparison_table
 import pandas as pd
 import numpy as np
-
+from income_metrics import calculate_income_metrics
 
 
 # Define the default end date
-DEFAULT_END_DATE = "2024-11"
+DEFAULT_END_DATE = "2024-09"
 
 # Sidebar for user inputs
 st.sidebar.header("Inputs")
@@ -34,7 +34,7 @@ custom_date_mode = st.sidebar.checkbox("Use Custom Begin and End Dates", value=F
 if custom_date_mode:
     # If custom mode, allow date selection
     try:
-        begin_date = st.sidebar.selectbox("Select Begin Date", date_options, index=date_options.index("1959-11"))
+        begin_date = st.sidebar.selectbox("Select Begin Date", date_options, index=date_options.index("1959-09"))
     except ValueError:
         begin_date = "1959-09"  # Fallback in case "1959-09" is not in date_options
     try:
@@ -59,7 +59,7 @@ else:
         "Last 70 Years": 70,
         "Last 80 Years": 80,
         "Last 90 Years": 90,
-        "Since End of WW2": "1945-09",
+        "Since End of WW II": "1945-09",
     }
 
     # Set default selected period to "Last 30 Years"
@@ -67,10 +67,10 @@ else:
         selected_period_label = st.sidebar.selectbox(
             "Select Predefined Period",
             list(predefined_periods_dict.keys()),
-            index=list(predefined_periods_dict.keys()).index("Since End of WW2")  # Set default to "Last 30 Years"
+            index=list(predefined_periods_dict.keys()).index("Since End of WW II")  # Set default to "Last 30 Years"
         )
     except ValueError:
-        selected_period_label = "Since End of WW2"  # Fallback if "Last 30 Years" not found
+        selected_period_label = "Since End of WW II"  # Fallback if "Last 30 Years" not found
 
     try:
         end_date = st.sidebar.selectbox("Select End Date", date_options, index=date_options.index(DEFAULT_END_DATE))
@@ -79,7 +79,7 @@ else:
 
     end_date_dt = pd.to_datetime(end_date)
 
-    if selected_period_label == "Since End of WW2":
+    if selected_period_label == "Since End of WW II":
         begin_date = "1945-09"  # Set the specific begin date for WW2
     else:
         # Calculate the begin date for other predefined periods
@@ -154,39 +154,28 @@ bar_chart_fig = graph.create_bar_chart(
 )
 st.plotly_chart(bar_chart_fig, use_container_width=True)
 
-# Add checkboxes for optional display of Nominal and Real Dividends
 st.header("A Deeper Dive Into Data")
-show_nominal = st.checkbox("Show Nominal Dividend Charts")
-show_real = st.checkbox("Show Real Dividend Charts")
 
-# Calculate dividends
-dividend_results = calculate_dividends(
-    data["data_df"], start_date=begin_date, end_date=end_date, initial_investment=initial_investment
-)
 
-for key, (df, total, final_value) in dividend_results.items():
-    if "With_Reinvestment" in key:
-        # Reinvested strategies
-        if ("Nominal" in key and show_nominal) or ("Real" in key and show_real):
-            st.subheader(f"{key.replace('_', ' ')}")
-            # st.write("**Total Dividends/Interest:** NA")
-            st.write(f"**Final Ending Value:** ${final_value:,.2f}")
+# Place this checkbox at the top
+if st.checkbox("Show Detailed Income Metrics Table"):
+    try:
+        # Call the calculate_income_metrics function
+        income_metrics_df = calculate_income_metrics(
+            data_df=data["data_df"],
+            bond_filtered_data=bond_filtered_data,
+            initial_investment=initial_investment,
+            begin_date=begin_date,
+            end_date=end_date,
+        )
 
-            # Create and display charts
-            chart_title = key.replace('_', ' ') + " - Dividends and Ending Value"
-            fig = graph.create_dividends_ending_value_chart(df, title=chart_title)
-            st.plotly_chart(fig, use_container_width=True)
-    else:
-        # Non-reinvested strategies
-        if ("Nominal" in key and show_nominal) or ("Real" in key and show_real):
-            st.subheader(f"{key.replace('_', ' ')}")
-            st.write(f"**Total Dividends/Interest:** ${total:,.2f}")
-            st.write(f"**Final Ending Value:** ${final_value:,.2f}")
+        # Display the formatted table
+        st.subheader("Detailed Income Metrics Table")
+        st.table(income_metrics_df)
 
-            # Create and display charts
-            chart_title = key.replace('_', ' ') + " - Dividends and Ending Value"
-            fig = graph.create_dividends_ending_value_chart(df, title=chart_title)
-            st.plotly_chart(fig, use_container_width=True)
+    except RuntimeError as e:
+        st.error(str(e))
+
 
 # Additional Financial Metrics
 if st.checkbox("Show Additional Financial Metrics"):
@@ -248,3 +237,42 @@ try:
 
 except Exception as e:
     st.error(f"Error displaying the comparison tables: {e}")
+
+# Add checkboxes for optional display of Nominal and Real Dividends
+show_nominal = st.checkbox("Show Nominal Dividend Charts")
+show_real = st.checkbox("Show Real Dividend Charts")
+
+# Calculate dividends
+dividend_results = calculate_dividends(
+    data["data_df"], start_date=begin_date, end_date=end_date, initial_investment=initial_investment
+)
+
+for key, (df, total, final_value) in dividend_results.items():
+    if "With_Reinvestment" in key:
+        # Reinvested strategies
+        if ("Nominal" in key and show_nominal) or ("Real" in key and show_real):
+            st.subheader(f"{key.replace('_', ' ')}")
+            # st.write("**Total Dividends/Interest:** NA")
+            st.write(f"**Final Ending Value:** ${final_value:,.2f}")
+
+            # Create and display charts
+            chart_title = key.replace('_', ' ') + " - Dividends and Ending Value"
+            fig = graph.create_dividends_ending_value_chart(df, title=chart_title)
+            st.plotly_chart(fig, use_container_width=True)
+    else:
+        # Non-reinvested strategies
+        if ("Nominal" in key and show_nominal) or ("Real" in key and show_real):
+            st.subheader(f"{key.replace('_', ' ')}")
+            st.write(f"**Total Dividends/Interest:** ${total:,.2f}")
+            st.write(f"**Final Ending Value:** ${final_value:,.2f}")
+
+            # Create and display charts
+            chart_title = key.replace('_', ' ') + " - Dividends and Ending Value"
+            fig = graph.create_dividends_ending_value_chart(df, title=chart_title)
+            st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+##########################
+
