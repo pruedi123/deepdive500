@@ -16,7 +16,7 @@ import numpy as np
 
 
 # Define the default end date
-DEFAULT_END_DATE = "2024-09"
+DEFAULT_END_DATE = "2024-11"
 
 # Sidebar for user inputs
 st.sidebar.header("Inputs")
