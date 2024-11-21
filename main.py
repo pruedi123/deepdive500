@@ -34,7 +34,7 @@ custom_date_mode = st.sidebar.checkbox("Use Custom Begin and End Dates", value=F
 if custom_date_mode:
     # If custom mode, allow date selection
     try:
-        begin_date = st.sidebar.selectbox("Select Begin Date", date_options, index=date_options.index("1959-09"))
+        begin_date = st.sidebar.selectbox("Select Begin Date", date_options, index=date_options.index("1959-11"))
     except ValueError:
         begin_date = "1959-09"  # Fallback in case "1959-09" is not in date_options
     try:
