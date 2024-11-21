@@ -139,11 +139,24 @@ bear_metrics_summary, bear_filtered_data = calculate_bear_market_metrics(
 )
 display_table("Bear Market Summary Table", bear_metrics_summary)
 
+# Display Bear Markets and Recessions During the Period
+if st.checkbox("Show Bear Markets During This Period"):
+    display_table("Bear Markets During This Period", bear_filtered_data)
+
+
+
+
 # Calculate and display Recession Metrics
 recession_metrics_summary, recession_filtered_data = calculate_recession_metrics(
     data["recession_data"], start_date=begin_date, end_date=end_date
 )
 display_table("Recession Summary Table", recession_metrics_summary)
+
+if st.checkbox("Show Recessions During This Period"):
+    display_table("Recessions During This Period", recession_filtered_data)
+
+
+
 
 # Add the new bar chart after the Recession Summary Table
 st.header("What did The Managers of The Great Companies of America Produce in the Face of Such Trauma...")
@@ -191,12 +204,11 @@ if st.checkbox("Show Additional Financial Metrics"):
     except Exception as e:
         st.error(f"Error calculating metrics: {e}")
 
-# Display Bear Markets and Recessions During the Period
-if st.checkbox("Show Bear Markets During This Period"):
-    display_table("Bear Markets During This Period", bear_filtered_data)
 
-if st.checkbox("Show Recessions During This Period"):
-    display_table("Recessions During This Period", recession_filtered_data)
+
+
+
+
 
 # Display Bond Results
 try:
